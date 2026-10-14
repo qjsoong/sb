@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  MDK_DEPLOY_KEY: ${{ secrets.MDK_DEPLOY_KEY }}
+
+jobs:
+  check:
+    name: Format, clippy and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Check formatting
+        run: cargo fmt --all --check
+
+      # sb depends on the private mdk repository. A read-only deploy key makes
+      # it reachable over SSH; without the secret the remaining steps are
+      # skipped and the job reports a warning.
+      - name: Set up the mdk deploy key
+        if: env.MDK_DEPLOY_KEY != ''
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$MDK_DEPLOY_KEY" > ~/.ssh/mdk
+          chmod 600 ~/.ssh/mdk
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+          eval "$(ssh-agent -s)" > /dev/null
+          ssh-add ~/.ssh/mdk
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+      - name: Run clippy
+        if: env.MDK_DEPLOY_KEY != ''
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Run tests
+        if: env.MDK_DEPLOY_KEY != ''
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        run: cargo test --locked
+
+      - name: Warn when the deploy key is missing
+        if: env.MDK_DEPLOY_KEY == ''
+        run: |
+          echo "::warning::MDK_DEPLOY_KEY is not set; clippy and tests were skipped."
