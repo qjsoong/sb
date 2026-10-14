@@ -5,6 +5,7 @@ edition = "2024"
 rust-version = "1.89"
 description = "A minimal static blog generator built on mdk"
 license = "MIT OR Apache-2.0"
+authors = ["The sb authors"]
 repository = "https://github.com/qjsoong/sb"
 homepage = "https://github.com/qjsoong/sb"
 readme = "README.md"
