@@ -1,0 +1,33 @@
+[package]
+name = "sb"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89"
+description = "A minimal static blog generator built on mdk"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/qjsoong/sb"
+homepage = "https://github.com/qjsoong/sb"
+readme = "README.md"
+keywords = ["static-site", "blog", "markdown"]
+categories = ["command-line-utilities", "web-programming"]
+
+[[bin]]
+name = "sb"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive"] }
+mdk-core = { git = "https://github.com/qjsoong/mdk", rev = "0126eea2f17edc3546f61ad401fc1d9e37a489cd" }
+mdk-render = { git = "https://github.com/qjsoong/mdk", rev = "0126eea2f17edc3546f61ad401fc1d9e37a489cd" }
+serde = { version = "1.0.229", features = ["derive"] }
+toml = "1.1.8"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+unimplemented = "warn"
+unwrap_used = "warn"

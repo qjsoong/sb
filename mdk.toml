@@ -1,0 +1,18 @@
+# Repository-wide mdk configuration; used when running mdk from the checkout.
+dialect = "gfm"
+
+[lint]
+# Prose is reflowed by the formatter, but tables and long URLs would need
+# exceptions, so the rule is relaxed rather than disabled.
+severity = { MD013 = "warning" }
+
+[lint.rules.MD013]
+line_length = 80
+# README examples deliberately show long tool output.
+code_blocks = false
+tables = false
+
+[fmt]
+line_width = 80
+heading_style = "atx"
+line_ending = "lf"
