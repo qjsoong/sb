@@ -10,9 +10,12 @@ cargo test --locked
 ```
 
 `sb` depends on the private `mdk` repository, so cargo needs access to
-`https://github.com/qjsoong/mdk` (the `gh` credential helper, for example). CI
-fetches it with a read-only deploy key stored in the `MDK_DEPLOY_KEY` secret;
-without that secret CI checks formatting and skips clippy and the tests.
+`https://github.com/qjsoong/mdk` (the `gh` credential helper, for example).
+
+CI fetches `mdk` with a read-only deploy key stored in the `MDK_DEPLOY_KEY`
+secret. Pull requests from forks do not receive that secret; those runs check
+formatting and then fail with a clear message, rather than reporting a green run
+for code that was never compiled. CI runs on Linux only.
 
 ## Before opening a pull request
 

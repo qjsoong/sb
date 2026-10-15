@@ -9,6 +9,9 @@ env:
   CARGO_TERM_COLOR: always
   MDK_DEPLOY_KEY: ${{ secrets.MDK_DEPLOY_KEY }}
 
+permissions:
+  contents: read
+
 jobs:
   check:
     name: Format, clippy and tests
@@ -24,8 +27,8 @@ jobs:
         run: cargo fmt --all --check
 
       # sb depends on the private mdk repository. A read-only deploy key makes
-      # it reachable over SSH; without the secret the remaining steps are
-      # skipped and the job reports a warning.
+      # it reachable over SSH; without the secret the job fails instead of
+      # reporting a green run that built nothing.
       - name: Set up the mdk deploy key
         if: env.MDK_DEPLOY_KEY != ''
         run: |
@@ -51,7 +54,9 @@ jobs:
           CARGO_NET_GIT_FETCH_WITH_CLI: "true"
         run: cargo test --locked
 
-      - name: Warn when the deploy key is missing
+      - name: Fail without the mdk deploy key
         if: env.MDK_DEPLOY_KEY == ''
         run: |
-          echo "::warning::MDK_DEPLOY_KEY is not set; clippy and tests were skipped."
+          echo "::error::MDK_DEPLOY_KEY is not set, so mdk cannot be fetched and nothing can be built or tested."
+          echo "Add a read-only deploy key for qjsoong/mdk as the MDK_DEPLOY_KEY secret (see CONTRIBUTING.md)."
+          exit 1

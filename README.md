@@ -15,14 +15,15 @@ and the output is plain HTML you can serve with anything.
 
 ## Install
 
-Until binaries are published, install from source:
+`sb` has no binary releases yet, so install it from source:
 
 ```bash
-cargo install --git https://github.com/qjsoong/sb
+cargo install --git https://github.com/qjsoong/sb --locked
 ```
 
-`sb` is built on `mdk`, a private repository, so installing it needs access to
-that repository as well.
+`sb` builds on [mdk](https://github.com/qjsoong/mdk) and pins it to a revision.
+`mdk` is currently private, so this command only works for accounts with access
+to that repository.
 
 ## Quick start
 
