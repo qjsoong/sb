@@ -9,13 +9,12 @@ cargo build
 cargo test --locked
 ```
 
-`sb` depends on the private `mdk` repository, so cargo needs access to
-`https://github.com/qjsoong/mdk` (the `gh` credential helper, for example).
+`sb` depends on [mdk](https://github.com/qjsoong/mdk), which is public and
+pinned to a released tag, so `cargo build` and `cargo test` work without extra
+credentials.
 
-CI fetches `mdk` with a read-only deploy key stored in the `MDK_DEPLOY_KEY`
-secret. Pull requests from forks do not receive that secret; those runs check
-formatting and then fail with a clear message, rather than reporting a green run
-for code that was never compiled. CI runs on Linux only.
+CI runs the checks on Linux, macOS and Windows, plus a separate job for the
+declared minimum Rust version (1.89).
 
 ## Before opening a pull request
 

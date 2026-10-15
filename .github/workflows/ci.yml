@@ -7,14 +7,13 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  MDK_DEPLOY_KEY: ${{ secrets.MDK_DEPLOY_KEY }}
 
 permissions:
   contents: read
 
 jobs:
-  check:
-    name: Format, clippy and tests
+  lints:
+    name: Format and clippy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -22,41 +21,39 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
-
       - name: Check formatting
         run: cargo fmt --all --check
-
-      # sb depends on the private mdk repository. A read-only deploy key makes
-      # it reachable over SSH; without the secret the job fails instead of
-      # reporting a green run that built nothing.
-      - name: Set up the mdk deploy key
-        if: env.MDK_DEPLOY_KEY != ''
-        run: |
-          mkdir -p ~/.ssh
-          printf '%s\n' "$MDK_DEPLOY_KEY" > ~/.ssh/mdk
-          chmod 600 ~/.ssh/mdk
-          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
-          eval "$(ssh-agent -s)" > /dev/null
-          ssh-add ~/.ssh/mdk
-          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
-          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
-          git config --global url."git@github.com:".insteadOf "https://github.com/"
-
       - name: Run clippy
-        if: env.MDK_DEPLOY_KEY != ''
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
         run: cargo clippy --all-targets -- -D warnings
 
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Run tests
-        if: env.MDK_DEPLOY_KEY != ''
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
         run: cargo test --locked
 
-      - name: Fail without the mdk deploy key
-        if: env.MDK_DEPLOY_KEY == ''
+  msrv:
+    name: Minimum supported Rust version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # The toolchain is pinned through the action input, not the action
+      # version, so Dependabot cannot bump the MSRV itself.
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.89.0
+      - uses: Swatinem/rust-cache@v2
+      - name: Check MSRV
+        env:
+          RUSTUP_TOOLCHAIN: 1.89.0
         run: |
-          echo "::error::MDK_DEPLOY_KEY is not set, so mdk cannot be fetched and nothing can be built or tested."
-          echo "Add a read-only deploy key for qjsoong/mdk as the MDK_DEPLOY_KEY secret (see CONTRIBUTING.md)."
-          exit 1
+          rustc --version
+          cargo check --locked

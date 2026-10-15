@@ -1,5 +1,9 @@
 # sb — a simple blog
 
+[![CI](https://github.com/qjsoong/sb/actions/workflows/ci.yml/badge.svg)](https://github.com/qjsoong/sb/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
+[![Rust](https://img.shields.io/badge/rust-1.89%2B-orange.svg)](https://www.rust-lang.org)
+
 A minimal static blog generator built on [mdk](https://github.com/qjsoong/mdk).
 Write Markdown posts; `sb` renders them into a directory of small, plain HTML
 pages.
@@ -21,9 +25,8 @@ and the output is plain HTML you can serve with anything.
 cargo install --git https://github.com/qjsoong/sb --locked
 ```
 
-`sb` builds on [mdk](https://github.com/qjsoong/mdk) and pins it to a revision.
-`mdk` is currently private, so this command only works for accounts with access
-to that repository.
+The build fetches [mdk](https://github.com/qjsoong/mdk), the Markdown toolkit
+that renders the posts, at the release pinned in `Cargo.toml`.
 
 ## Quick start
 

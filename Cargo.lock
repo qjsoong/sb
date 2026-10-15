@@ -201,8 +201,8 @@ checksum = "a6cb138bb79a146c1bd460005623e142ef0181e3d0219cb493e02f7d08a35695"
 
 [[package]]
 name = "mdk-core"
-version = "0.1.0"
-source = "git+https://github.com/qjsoong/mdk?rev=0126eea2f17edc3546f61ad401fc1d9e37a489cd#0126eea2f17edc3546f61ad401fc1d9e37a489cd"
+version = "0.3.0"
+source = "git+https://github.com/qjsoong/mdk?tag=v0.3.0#6684f805cae9b8c771eb860241cc16e91f2ea608"
 dependencies = [
  "comrak",
  "serde",
@@ -212,8 +212,8 @@ dependencies = [
 
 [[package]]
 name = "mdk-render"
-version = "0.1.0"
-source = "git+https://github.com/qjsoong/mdk?rev=0126eea2f17edc3546f61ad401fc1d9e37a489cd#0126eea2f17edc3546f61ad401fc1d9e37a489cd"
+version = "0.3.0"
+source = "git+https://github.com/qjsoong/mdk?tag=v0.3.0#6684f805cae9b8c771eb860241cc16e91f2ea608"
 dependencies = [
  "comrak",
  "mdk-core",
