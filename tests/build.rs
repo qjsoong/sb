@@ -58,7 +58,9 @@ fn stdout(output: &Output) -> String {
 }
 
 fn stderr(output: &Output) -> String {
-    String::from_utf8_lossy(&output.stderr).to_string()
+    // Windows renders paths with backslashes; normalise so the assertions can
+    // use the same `/`-separated paths on every platform.
+    String::from_utf8_lossy(&output.stderr).replace('\\', "/")
 }
 
 fn post(title: &str, date: &str, body: &str) -> String {
